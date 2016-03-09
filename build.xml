@@ -142,7 +142,7 @@
 	<target name="release" depends="version,jar">
 		<echo message="${new.version}"/>
 		<echo message="TODO: Auto deploy release to github, reverb.jar, reverb-dependencies.jar, JSON-java.jar"/>
-		<!--<github.fullrelease
+		<github.fullrelease
 			repouser="${github.repouser}"
 			repo="${github.repo}"
 			tokenuser="${github.tokenuser}"
@@ -153,7 +153,7 @@
 				<include name="${jar}"/>
 				<include name="${jar.depends}"/>
 			</fileset>
-		</github.fullrelease>-->
+		</github.fullrelease>
 	</target>
 	
 	<target name="list">
