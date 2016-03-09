@@ -271,7 +271,7 @@ public class HttpRequest {
 		OutputStream os = null;
 		try {
 			if(METHOD_GET.equals(method)){
-				baseurl = baseurl + (content !=null && content.length > 0 ? (baseurl.contains("?") ? '&' : '?') + new String(content) : "");
+				baseurl = baseurl + (content !=null && content.length > 0 ? (baseurl.indexOf('?') < 0 ? '?' : '&') + new String(content) : "");
 			}
 			ReverbApi.echo(baseurl);
 			conn = (HttpURLConnection) new URL(baseurl).openConnection();

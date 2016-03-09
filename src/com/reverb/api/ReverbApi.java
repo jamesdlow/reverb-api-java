@@ -7,9 +7,9 @@ import org.json.*;
 
 public class ReverbApi {
 	//Constants
-	public static final String WEB_URL = "https://reverb.com";
-	public static final String API_URL = WEB_URL+"/api/";
-	public static final String AUTH_URL = WEB_URL+"/oauth/token";
+	public static final String URL = "https://reverb.com";
+	public static final String API_URL = URL+"/api/";
+	public static final String AUTH_URL = URL+"/oauth/token";
 	public static final String BEARER = "Bearer";
 	public static final String XAUTHTOKEN = "X-Auth-Token";
 	public static int TIMEOUT = 40000;
@@ -26,6 +26,15 @@ public class ReverbApi {
 	//JSON Properties
 	public static final String ERROR = "error";
 	public static final String MESSAGE = "message";
+	public static final String HREF = "href";
+	public static final String LINKS = "_links";
+	public static final String WEB = "web";
+	public static final String SELF = "self";
+	public static final String TOTAL = "total";
+	public static final String TITLE = "title";
+	public static final String SUMMARY = "summary";
+	public static final String PHOTOS = "photos";
+	public static final String COMPARISON_SHOPPING_PAGES = "comparison_shopping_pages";
 	
 	//Static variables
 	private static final Logger log = Logger.getLogger(ReverbApi.class.getName());
@@ -104,6 +113,10 @@ public class ReverbApi {
 	//Static methods
 	public static boolean blank(String s) {
 		return s == null || s.isEmpty();
+	}
+	public static JSONObject getFirstItem(JSONObject json, String param) {
+		JSONArray list = json.optJSONArray(param);
+		return list == null ? json : list.optJSONObject(0);
 	}
 	public static void echo(Object obj) throws IOException {
 		System.out.println(obj);
