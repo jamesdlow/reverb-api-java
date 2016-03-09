@@ -50,7 +50,7 @@
 	
 	<path id="class.path">
 		<fileset dir="build">
-			<include name="**/*.jar"/>
+			<include name="**/reverb.jar"/>
 		</fileset>
 		<fileset dir="lib">
 			<include name="**/*.jar"/>
@@ -100,7 +100,9 @@
 	</target>
 	
 	<target name="test" depends="jar">
-		<java classname="com.reverb.api.ReverbApi" fork="true" maxmemory="128m" classpathref="class.path"/>
+		<java classname="com.reverb.api.ReverbApi" fork="true" maxmemory="128m" classpathref="class.path">
+			<arg value="${reverb.token}"/>
+		</java>
 	</target>
 	
 	<target name="release" depends="jar.depends">

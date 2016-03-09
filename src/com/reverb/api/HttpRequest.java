@@ -175,8 +175,8 @@ public class HttpRequest {
 		StringBuilder builder = new StringBuilder();
 		for (Map.Entry<String, Object> param : params.entrySet()) {
 			Object value = param.getValue();
-			if (builder.length() >= 0){
-				builder.append("&");
+			if (builder.length() > 0){
+				builder.append('&');
 			}
 			if (value instanceof Iterable) {
 				Iterable list = (Iterable) value;
@@ -271,8 +271,9 @@ public class HttpRequest {
 		OutputStream os = null;
 		try {
 			if(METHOD_GET.equals(method)){
-				baseurl = baseurl + (content !=null && content.length > 0 ? (!baseurl.contains("?") ? '&' : '?') + new String(content) : "");
+				baseurl = baseurl + (content !=null && content.length > 0 ? (baseurl.contains("?") ? '&' : '?') + new String(content) : "");
 			}
+			ReverbApi.echo(baseurl);
 			conn = (HttpURLConnection) new URL(baseurl).openConnection();
 			conn.setRequestMethod(method);
 			for (Map.Entry<String, String> header : headers.entrySet()) {
