@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ReverbApi" default="copy" basedir=".">
+	<property name="src" value="src"/>
+	<property name="bin" value="bin"/>
+	<property name="lib" value="lib"/>
+	<property name="build" value="build"/>
+	<property name="docs" value="docs"/>
+	<property name="jar" location="${build}/reverb.jar"/>
+	<property name="jar.depends" location="${build}/reverb-dependencies.jar"/>
+	<property name="local.properties" value="local.properties"/>
+	<property file="${local.properties}"/>
+	
+	<condition property="is.mac">
+		<os family="mac"/>
+	</condition>
+	<condition property="not.mac">
+		<not><isset property="is.mac"/></not>
+	</condition>
+	<condition property="is.windows">
+		<os family="windows"/>
+	</condition>
+	<condition property="is.unix">
+		<and>
+			<os family="unix"/>
+			<isset property="not.mac"/>
+		</and>
+	</condition>
+	<condition property="is.other">
+		<and>
+			<not><isset property="is.mac"/></not>
+			<not><isset property="is.unix"/></not>
+			<not><isset property="is.windows"/></not>
+		</and>
+	</condition>
+	<condition property="copy.props">
+		<not>
+			<available file="${local.properties}"/>
+		</not>
+	</condition>
+	
+	<target name="copy.properties" if="copy.props">
+		<copy file="local.example.properties" tofile="${local.properties}" />
+	</target>
+	
+	<target name="prepare" depends="copy.properties" description="Create build dirs">
+		<mkdir dir="${bin}"/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${docs}"/>
+	</target>
+	
+	<path id="class.path">
+		<fileset dir="build">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="jar" depends="prepare">
+		<javac srcdir="${src}" destdir="${bin}" source="1.6" target="1.5" includes="**/*.java" includeantruntime="false" classpathref="class.path"/>
+		<!--<exportjar dir="build"/>-->
+		<jar jarfile="${jar}" basedir="${bin}" manifest="MANIFEST.MF"/>
+	</target>
+	
+	<target name="jar.depends" depends="jar">
+		<zip destfile="${jar.depends}">
+			<zipgroupfileset dir="${build}" includes="reverb.jar"/>
+			<zipgroupfileset dir="${lib}" includes="*.jar"/>
+		</zip>
+	</target>
+	
+	<target name="copy" depends="jar">
+		<propertyset id="copy.dirs">
+			<propertyref prefix="dir"/>
+		</propertyset>
+		<pathconvert refid="copy.dirs" pathsep="," property="copy.dirs" preserveduplicates="true">
+			<mapper type="regexp" from="^(.*)$" to="\1"/>
+		</pathconvert>
+		<script language="javascript"><![CDATA[
+			//https://ant.apache.org/manual/Tasks/script.html
+			//importPackage(java.io);
+			importClass(java.io.File);
+			function echo(message) {
+				var echotask = project.createTask('echo');
+				echotask.setMessage(message); echotask.perform();
+			}
+			echo('Entering JavaScript...');
+			
+			var copy = project.createTask('copy');
+			copy.setFile(new File(project.getProperty('jar')));
+			
+			var props = project.getProperty('copy.dirs').split(",");
+			for (var i=0; i<props.length; i++) {
+				copy.setTodir(new File(props[i]));
+				copy.perform();
+			}
+		]]>
+		</script>
+	</target>
+	
+	<target name="test" depends="jar">
+		<java classname="com.reverb.api.ReverbApi" fork="true" maxmemory="128m" classpathref="class.path"/>
+	</target>
+	
+	<target name="release" depends="jar.depends">
+		<echo message="TODO: Auto deploy release to github, reverb.jar, reverb-dependencies.jar, JSON-java.jar"/>
+	</target>
+	
+	<target name="list">
+		<propertyset id="copy.dirs">
+			<propertyref prefix="dir"/>
+		</propertyset>
+		<pathconvert refid="copy.dirs" pathsep="," property="copy.dirs"/>
+		<echo message="${copy.dirs}" /> 
+	</target>
+</project>
