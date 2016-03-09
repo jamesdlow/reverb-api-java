@@ -273,7 +273,6 @@ public class HttpRequest {
 			if(METHOD_GET.equals(method)){
 				baseurl = baseurl + (content !=null && content.length > 0 ? (baseurl.indexOf('?') < 0 ? '?' : '&') + new String(content) : "");
 			}
-			ReverbApi.echo(baseurl);
 			conn = (HttpURLConnection) new URL(baseurl).openConnection();
 			conn.setRequestMethod(method);
 			for (Map.Entry<String, String> header : headers.entrySet()) {
