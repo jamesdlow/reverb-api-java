@@ -61,9 +61,6 @@
 		<javac srcdir="${src}" destdir="${bin}" source="1.6" target="1.5" includes="**/*.java" includeantruntime="false" classpathref="class.path"/>
 		<!--<exportjar dir="build"/>-->
 		<jar jarfile="${jar}" basedir="${bin}" manifest="MANIFEST.MF"/>
-	</target>
-	
-	<target name="jar.depends" depends="jar">
 		<zip destfile="${jar.depends}">
 			<zipgroupfileset dir="${build}" includes="reverb.jar"/>
 			<zipgroupfileset dir="${lib}" includes="*.jar"/>
@@ -105,7 +102,7 @@
 		</java>
 	</target>
 	
-	<target name="release" depends="jar.depends">
+	<target name="release" depends="jar">
 		<echo message="TODO: Auto deploy release to github, reverb.jar, reverb-dependencies.jar, JSON-java.jar"/>
 	</target>
 	

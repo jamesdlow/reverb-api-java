@@ -39,19 +39,19 @@ public class ReverbApi {
 	//Static variables
 	private static final Logger log = Logger.getLogger(ReverbApi.class.getName());
 	
-	public JSONObject apiPublic(String authorization, String uri) throws IOException {
+	public static JSONObject apiPublic(String authorization, String uri) throws IOException {
 		return apiPublic(authorization, uri, null);
 	}
-	public JSONObject apiPublic(String authorization, String uri, Map<String,Object> params) throws IOException {
+	public static JSONObject apiPublic(String authorization, String uri, Map<String,Object> params) throws IOException {
 		return apiPublic(authorization, uri, params, GET);
 	}
-	public JSONObject apiPublic(String authorization, String uri, Map<String,Object> params, String method) throws IOException {
+	public static JSONObject apiPublic(String authorization, String uri, Map<String,Object> params, String method) throws IOException {
 		return api(authorization, null, uri, params, method);
 	}
-	public JSONObject api(String authorization, String usertoken, String uri, Map<String,Object> params, String method) throws IOException {
+	public static JSONObject api(String authorization, String usertoken, String uri, Map<String,Object> params, String method) throws IOException {
 		return request(authorization, usertoken, API_URL+uri, params, method);
 	}
-	public JSONObject request(String authorization, String usertoken, String url, Map<String,Object> params, String method) throws IOException {
+	public static JSONObject request(String authorization, String usertoken, String url, Map<String,Object> params, String method) throws IOException {
 		try {
 			HttpRequest http = new HttpRequest(url,method,(GET.equals(method) ? null : HttpRequest.CONTENT_FORM),TIMEOUT,true);
 			if (authorization != null) {
@@ -89,7 +89,7 @@ public class ReverbApi {
 			throw new IOException(error);
 		}
 	}
-	public JSONObject get(String authorization) throws IOException {
+	public static JSONObject get(String authorization) throws IOException {
 		return apiPublic(authorization, "");
 	}
 	public String getAuthorization(String key, String secret) throws IOException {
@@ -102,7 +102,7 @@ public class ReverbApi {
 		params.put("client_secret", secret);
 		return request(null, null, AUTH_URL, params, POST).optString("access_token");
 	}
-	public JSONObject getComparisonShopping(String authorization, String query) throws IOException {
+	public static JSONObject getComparisonShopping(String authorization, String query) throws IOException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		if (!blank(query)) {
 			params.put(QUERY, query); 
@@ -122,10 +122,9 @@ public class ReverbApi {
 		System.out.println(obj);
 	}
 	public static void main(String[] args) throws IOException {
-		ReverbApi reverb = new ReverbApi();
 		String token = args.length > 0 ? args[0] : null;
 		token = "${reverb.token}".equals(token) ? null : token;
 		echo("Using token: "+token);
-		echo(reverb.get(token));
+		echo(get(token));
 	}
 }
