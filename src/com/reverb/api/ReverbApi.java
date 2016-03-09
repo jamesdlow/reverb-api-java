@@ -34,6 +34,8 @@ public class ReverbApi {
 	public static final String TITLE = "title";
 	public static final String SUMMARY = "summary";
 	public static final String PHOTOS = "photos";
+	public static final String MAKES = "makes";
+	public static final String MODELS = "models";
 	public static final String COMPARISON_SHOPPING_PAGES = "comparison_shopping_pages";
 	
 	//Static variables
