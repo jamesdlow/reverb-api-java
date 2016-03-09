@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ReverbApi" default="copy" basedir=".">
+	<property name="build.properties" value="build.properties"/>
+	<property file="${build.properties}"/>
+	<property name="local.properties" value="local.properties"/>
+	<property file="${local.properties}"/>
 	<property name="src" value="src"/>
 	<property name="bin" value="bin"/>
 	<property name="lib" value="lib"/>
 	<property name="build" value="build"/>
+		<property name="jar" value="reverb.jar"/>
+		<property name="build.jar" location="${build}/${jar}"/>
+		<property name="jar.depends" value="reverb-dependencies.jar"/>
+		<property name="build.jar.depends" location="${build}/${jar.depends}"/>
+	<property name="tools" location="tools"/>
+		<property name="github" location="${tools}/github"/>
 	<property name="docs" value="docs"/>
-	<property name="jar" location="${build}/reverb.jar"/>
-	<property name="jar.depends" location="${build}/reverb-dependencies.jar"/>
-	<property name="local.properties" value="local.properties"/>
-	<property file="${local.properties}"/>
+	
+	<fileset id="github-anttasks.jars" dir="${github}/lib">
+		<include name="**/*.jar"/>
+	</fileset>
+	<path id="github-anttasks.classpath">
+		<fileset refid="github-anttasks.jars"/>
+		<pathelement location="."/>
+		<fileset dir="${github}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	<taskdef name="github.createrelease" classname="com.github.api.CreateRelease" classpathref="github-anttasks.classpath" loaderref="github-anttasks.classpath.loader" />
+	<taskdef name="github.uploadasset" classname="com.github.api.UploadAsset" classpathref="github-anttasks.classpath" loaderref="github-anttasks.classpath.loader" />
+	<taskdef name="github.fullrelease" classname="com.github.api.FullRelease" classpathref="github-anttasks.classpath" loaderref="github-anttasks.classpath.loader" />
 	
 	<condition property="is.mac">
 		<os family="mac"/>
@@ -57,11 +77,28 @@
 		</fileset>
 	</path>
 	
-	<target name="jar" depends="prepare">
+	<target name="version.input" depends="prepare">
+		<input
+			message="Please input a new version. Current version ${build.version}"
+			addproperty="new.version"
+		 />
+		<propertyfile file="${build.properties}">
+			<entry key="build.version" value="${new.version}"/>
+		</propertyfile>
+	</target>
+	<target name="version.default" depends="prepare">
+		<property name="new.version" value="${build.version}"/>
+	</target>
+	<target name="version" depends="version.input" description="Prompt user to enter new version">
+		<!-- At the moment version requires nothing else -->
+	</target>
+	
+	<target name="jar" depends="version.default">
+		<buildnumber file="${build.properties}"/>
 		<javac srcdir="${src}" destdir="${bin}" source="1.6" target="1.5" includes="**/*.java" includeantruntime="false" classpathref="class.path"/>
 		<!--<exportjar dir="build"/>-->
-		<jar jarfile="${jar}" basedir="${bin}" manifest="MANIFEST.MF"/>
-		<zip destfile="${jar.depends}">
+		<jar jarfile="${build.jar}" basedir="${bin}" manifest="MANIFEST.MF"/>
+		<zip destfile="${build.jar.depends}">
 			<zipgroupfileset dir="${build}" includes="reverb.jar"/>
 			<zipgroupfileset dir="${lib}" includes="*.jar"/>
 		</zip>
@@ -85,7 +122,7 @@
 			echo('Entering JavaScript...');
 			
 			var copy = project.createTask('copy');
-			copy.setFile(new File(project.getProperty('jar')));
+			copy.setFile(new File(project.getProperty('build.jar')));
 			
 			var props = project.getProperty('copy.dirs').split(",");
 			for (var i=0; i<props.length; i++) {
@@ -102,8 +139,21 @@
 		</java>
 	</target>
 	
-	<target name="release" depends="jar">
+	<target name="release" depends="version,jar">
+		<echo message="${new.version}"/>
 		<echo message="TODO: Auto deploy release to github, reverb.jar, reverb-dependencies.jar, JSON-java.jar"/>
+		<!--<github.fullrelease
+			repouser="${github.repouser}"
+			repo="${github.repo}"
+			tokenuser="${github.tokenuser}"
+			token="${github.token}"
+			tag="${new.version}"
+			body="Reverb.com API Java library version ${new.version}">
+			<fileset dir="${build}" casesensitive="yes">
+				<include name="${jar}"/>
+				<include name="${jar.depends}"/>
+			</fileset>
+		</github.fullrelease>-->
 	</target>
 	
 	<target name="list">
