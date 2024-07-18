@@ -7,6 +7,7 @@ public class ReverbAffiliates {
 	public static final String AID = "_aid";
 	public static final String HORIZONAL = "horizontal";
 	public static final String VERTICAL = "vertical";
+	public static final String GEARTUBE = "geartube";
 	
 	public static String comparisonLink(JSONObject json) {
 		JSONObject item = ReverbApi.getFirstItem(json, ReverbApi.COMPARISON_SHOPPING_PAGES);
@@ -22,6 +23,9 @@ public class ReverbAffiliates {
 		//?_aid=geartube&orientation=horizontal
 		String suffix = weburl.substring(weburl.lastIndexOf('/')+1);
 		return affiliateLink(ReverbApi.URL+"/affiliates/comparison_shopping_embeds/"+suffix+"?orientation="+(horizontal?HORIZONAL:VERTICAL), affiliateid);
+	}
+	public static String affiliateLink(String url) {
+		return affiliateLink(url, GEARTUBE);
 	}
 	public static String affiliateLink(String url, String affiliateid) {
 		return url+(url.indexOf('?') < 0 ? '?' : '&')+AID+'='+HttpRequest.encode(affiliateid);
